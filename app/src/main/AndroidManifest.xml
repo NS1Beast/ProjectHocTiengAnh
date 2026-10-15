@@ -26,6 +26,10 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".Main_ChonTuVung"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Main_ChuDe"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

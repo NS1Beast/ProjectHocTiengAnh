@@ -2,4 +2,30 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primary">#1E88E5</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#E3F2FD</color>
+    <color name="accent">#0288D1</color>
+
+    <color name="learned_green">#2E7D32</color>
+    <color name="learned_green_light">#E8F5E9</color>
+    <color name="learned_green_border">#4CAF50</color>
+
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#9E9E9E</color>
+
+    <color name="bg_light">#F5F7FA</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="border_color">#E0E0E0</color>
+    <color name="divider_color">#EEEEEE</color>
+
+    <color name="pill_unselected_bg">#F0F2F5</color>
+    <color name="pill_unselected_text">#616161</color>
+    <color name="pill_selected_bg">#1E88E5</color>
+    <color name="pill_selected_text">#FFFFFF</color>
+
+    <color name="banner_overlay">#66000000</color>
+    <color name="banner_blue_start">#1A237E</color>
+    <color name="banner_blue_end">#0288D1</color>
 </resources>

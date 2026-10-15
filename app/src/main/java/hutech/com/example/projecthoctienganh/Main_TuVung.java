@@ -1,24 +1,511 @@
 package hutech.com.example.projecthoctienganh;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class Main_TuVung extends AppCompatActivity {
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import hutech.com.example.projecthoctienganh.adapter.VocabularyAdapter;
+import hutech.com.example.projecthoctienganh.db.DatabaseHelper;
+import hutech.com.example.projecthoctienganh.model.Topic;
+import hutech.com.example.projecthoctienganh.model.Vocabulary;
+
+public class Main_TuVung extends AppCompatActivity implements TextToSpeech.OnInitListener {
+
+    public static final String EXTRA_TOPIC_ID = "extra_topic_id";
+
+    private DatabaseHelper dbHelper;
+    private TextToSpeech textToSpeech;
+    private int currentTopicId = 1;
+    private int currentFilter = DatabaseHelper.FILTER_ALL;
+
+    // UI Components
+    private ImageButton btnBack, btnMoreOptions;
+    private TextView tvHeaderTitle, tvBannerTopicName, tvBannerSubStats;
+    private ImageView imgBannerTopicIcon;
+    private ProgressBar bannerProgressBar;
+
+    private TextView btnFilterAll, btnFilterUnlearned, btnFilterLearned;
+    private RecyclerView rvVocabulary;
+    private LinearLayout layoutEmptyState;
+    private TextView tvEmptyMessage;
+    private FloatingActionButton fabAddWord;
+
+    private VocabularyAdapter adapter;
+    private List<Vocabulary> currentVocabularyList = new ArrayList<>();
+    private Topic currentTopic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_tu_vung);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_TOPIC_ID)) {
+            currentTopicId = getIntent().getIntExtra(EXTRA_TOPIC_ID, 1);
+        }
+
+        dbHelper = new DatabaseHelper(this);
+        textToSpeech = new TextToSpeech(this, this);
+
+        initViews();
+        setupListeners();
+        loadTopicData();
+        loadVocabularyList();
+    }
+
+    private void initViews() {
+        btnBack = findViewById(R.id.btnBack);
+        btnMoreOptions = findViewById(R.id.btnMoreOptions);
+        tvHeaderTitle = findViewById(R.id.tvHeaderTitle);
+
+        tvBannerTopicName = findViewById(R.id.tvBannerTopicName);
+        tvBannerSubStats = findViewById(R.id.tvBannerSubStats);
+        imgBannerTopicIcon = findViewById(R.id.imgBannerTopicIcon);
+        bannerProgressBar = findViewById(R.id.bannerProgressBar);
+
+        btnFilterAll = findViewById(R.id.btnFilterAll);
+        btnFilterUnlearned = findViewById(R.id.btnFilterUnlearned);
+        btnFilterLearned = findViewById(R.id.btnFilterLearned);
+
+        rvVocabulary = findViewById(R.id.rvVocabulary);
+        layoutEmptyState = findViewById(R.id.layoutEmptyState);
+        tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
+        fabAddWord = findViewById(R.id.fabAddWord);
+
+        rvVocabulary.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new VocabularyAdapter(this, currentVocabularyList);
+        rvVocabulary.setAdapter(adapter);
+    }
+
+    private void setupListeners() {
+        btnBack.setOnClickListener(v -> finish());
+
+        btnMoreOptions.setOnClickListener(this::showMoreOptionsMenu);
+
+        btnFilterAll.setOnClickListener(v -> setFilter(DatabaseHelper.FILTER_ALL));
+        btnFilterUnlearned.setOnClickListener(v -> setFilter(DatabaseHelper.FILTER_UNLEARNED));
+        btnFilterLearned.setOnClickListener(v -> setFilter(DatabaseHelper.FILTER_LEARNED));
+
+        fabAddWord.setOnClickListener(v -> showAddEditWordDialog(null));
+
+        adapter.setOnItemClickListener((vocabulary, position) -> showWordDetailDialog(vocabulary));
+
+        adapter.setOnStatusClickListener((vocabulary, position) -> {
+            boolean newStatus = !vocabulary.isLearned();
+            dbHelper.updateLearnedStatus(vocabulary.getId(), newStatus);
+            vocabulary.setLearned(newStatus);
+
+            loadTopicData();
+            loadVocabularyList();
+
+            String statusText = newStatus ? "Đã đánh dấu thuộc từ" : "Đã chuyển về chưa thuộc";
+            Toast.makeText(Main_TuVung.this, statusText + ": " + vocabulary.getWord(), Toast.LENGTH_SHORT).show();
+        });
+
+        adapter.setOnItemLongClickListener((vocabulary, position) -> showWordOptionsDialog(vocabulary));
+    }
+
+    private void setFilter(int filterType) {
+        this.currentFilter = filterType;
+
+        // Reset Styles
+        btnFilterAll.setBackgroundResource(R.drawable.bg_pill_unselected);
+        btnFilterAll.setTextColor(getResources().getColor(R.color.pill_unselected_text, getTheme()));
+
+        btnFilterUnlearned.setBackgroundResource(R.drawable.bg_pill_unselected);
+        btnFilterUnlearned.setTextColor(getResources().getColor(R.color.pill_unselected_text, getTheme()));
+
+        btnFilterLearned.setBackgroundResource(R.drawable.bg_pill_unselected);
+        btnFilterLearned.setTextColor(getResources().getColor(R.color.pill_unselected_text, getTheme()));
+
+        // Highlight Active
+        if (filterType == DatabaseHelper.FILTER_ALL) {
+            btnFilterAll.setBackgroundResource(R.drawable.bg_pill_selected);
+            btnFilterAll.setTextColor(getResources().getColor(R.color.pill_selected_text, getTheme()));
+        } else if (filterType == DatabaseHelper.FILTER_UNLEARNED) {
+            btnFilterUnlearned.setBackgroundResource(R.drawable.bg_pill_selected);
+            btnFilterUnlearned.setTextColor(getResources().getColor(R.color.pill_selected_text, getTheme()));
+        } else if (filterType == DatabaseHelper.FILTER_LEARNED) {
+            btnFilterLearned.setBackgroundResource(R.drawable.bg_pill_selected);
+            btnFilterLearned.setTextColor(getResources().getColor(R.color.pill_selected_text, getTheme()));
+        }
+
+        loadVocabularyList();
+    }
+
+    private void loadTopicData() {
+        currentTopic = dbHelper.getTopicById(currentTopicId);
+        if (currentTopic != null) {
+            tvHeaderTitle.setText(currentTopic.getName());
+            tvBannerTopicName.setText(currentTopic.getName());
+
+            int iconResId = getResources().getIdentifier(currentTopic.getIconName(), "drawable", getPackageName());
+            if (iconResId != 0) {
+                imgBannerTopicIcon.setImageResource(iconResId);
+            } else {
+                imgBannerTopicIcon.setImageResource(R.drawable.ic_flight);
+            }
+
+            int total = currentTopic.getTotalWords();
+            int learned = currentTopic.getLearnedWords();
+            int percent = total > 0 ? (learned * 100 / total) : 0;
+
+            tvBannerSubStats.setText(total + " từ • " + learned + " đã thuộc");
+            bannerProgressBar.setProgress(percent);
+        }
+    }
+
+    private void loadVocabularyList() {
+        currentVocabularyList = dbHelper.getVocabulariesByTopic(currentTopicId, currentFilter);
+        adapter.updateList(currentVocabularyList);
+
+        if (currentVocabularyList.isEmpty()) {
+            layoutEmptyState.setVisibility(View.VISIBLE);
+            rvVocabulary.setVisibility(View.GONE);
+
+            if (currentFilter == DatabaseHelper.FILTER_UNLEARNED) {
+                tvEmptyMessage.setText("Bạn đã thuộc tất cả từ trong chủ đề này!");
+            } else if (currentFilter == DatabaseHelper.FILTER_LEARNED) {
+                tvEmptyMessage.setText("Chưa có từ nào được đánh dấu đã học.");
+            } else {
+                tvEmptyMessage.setText("Chưa có từ vựng nào trong chủ đề này.");
+            }
+        } else {
+            layoutEmptyState.setVisibility(View.GONE);
+            rvVocabulary.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showMoreOptionsMenu(View anchor) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenu().add(0, 1, 0, "Chỉnh sửa chủ đề");
+        popup.getMenu().add(0, 3, 1, "Nhập / Xuất file CSV");
+        popup.getMenu().add(0, 4, 2, "Xóa chủ đề");
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == 1) {
+                showEditTopicDialog();
+                return true;
+            } else if (id == 3) {
+                showCsvImportExportDialog();
+                return true;
+            } else if (id == 4) {
+                confirmDeleteTopic();
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void showWordDetailDialog(Vocabulary vocab) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_word_detail);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        ImageView imgDetailIcon = dialog.findViewById(R.id.imgDetailIcon);
+        TextView tvDetailWord = dialog.findViewById(R.id.tvDetailWord);
+        TextView tvDetailPhonetic = dialog.findViewById(R.id.tvDetailPhonetic);
+        TextView tvDetailMeaning = dialog.findViewById(R.id.tvDetailMeaning);
+        TextView tvDetailExample = dialog.findViewById(R.id.tvDetailExample);
+        ImageButton btnSpeak = dialog.findViewById(R.id.btnSpeak);
+        SwitchMaterial switchLearned = dialog.findViewById(R.id.switchLearned);
+        MaterialButton btnCloseDetail = dialog.findViewById(R.id.btnCloseDetail);
+
+        tvDetailWord.setText(vocab.getWord());
+        tvDetailPhonetic.setText(vocab.getPhonetic());
+        tvDetailMeaning.setText(vocab.getMeaning());
+        tvDetailExample.setText(vocab.getExample() != null && !vocab.getExample().isEmpty() ? vocab.getExample() : "Chưa có ví dụ câu.");
+
+        int iconResId = getResources().getIdentifier(vocab.getIconName(), "drawable", getPackageName());
+        if (iconResId != 0) {
+            imgDetailIcon.setImageResource(iconResId);
+        }
+
+        switchLearned.setChecked(vocab.isLearned());
+
+        btnSpeak.setOnClickListener(v -> speakWord(vocab.getWord()));
+
+        switchLearned.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            vocab.setLearned(isChecked);
+            dbHelper.updateLearnedStatus(vocab.getId(), isChecked);
+            loadTopicData();
+            loadVocabularyList();
+        });
+
+        btnCloseDetail.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void showWordOptionsDialog(Vocabulary vocab) {
+        String[] options = {"Sửa từ vựng", "Xóa từ vựng", "Phát âm"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(vocab.getWord());
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                showAddEditWordDialog(vocab);
+            } else if (which == 1) {
+                dbHelper.deleteVocabulary(vocab.getId());
+                loadTopicData();
+                loadVocabularyList();
+                Toast.makeText(Main_TuVung.this, "Đã xóa từ: " + vocab.getWord(), Toast.LENGTH_SHORT).show();
+            } else if (which == 2) {
+                speakWord(vocab.getWord());
+            }
+        });
+        builder.show();
+    }
+
+    private void showAddEditWordDialog(Vocabulary existingVocab) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_edit_word);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextView tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
+        AutoCompleteTextView actvSelectTopic = dialog.findViewById(R.id.actvSelectTopic);
+        TextInputEditText etWord = dialog.findViewById(R.id.etWord);
+        TextInputEditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
+        TextInputEditText etMeaning = dialog.findViewById(R.id.etMeaning);
+        TextInputEditText etExample = dialog.findViewById(R.id.etExample);
+        MaterialButton btnCancelWord = dialog.findViewById(R.id.btnCancelWord);
+        MaterialButton btnSaveWord = dialog.findViewById(R.id.btnSaveWord);
+
+        // Load all topics for topic selector
+        List<Topic> topicsList = dbHelper.getAllTopics();
+        List<String> topicNames = new ArrayList<>();
+        int selectedTopicIndex = 0;
+        for (int i = 0; i < topicsList.size(); i++) {
+            Topic t = topicsList.get(i);
+            topicNames.add(t.getName());
+            if (t.getId() == currentTopicId) {
+                selectedTopicIndex = i;
+            }
+        }
+
+        ArrayAdapter<String> topicAdapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, topicNames);
+        actvSelectTopic.setAdapter(topicAdapter);
+
+        if (!topicNames.isEmpty()) {
+            actvSelectTopic.setText(topicNames.get(selectedTopicIndex), false);
+        }
+
+        final int[] chosenTopicId = {currentTopicId};
+        actvSelectTopic.setOnItemClickListener((parent, view, position, id) -> {
+            chosenTopicId[0] = topicsList.get(position).getId();
+        });
+
+        if (existingVocab != null) {
+            tvDialogTitle.setText("Chỉnh sửa từ vựng");
+            etWord.setText(existingVocab.getWord());
+            etPhonetic.setText(existingVocab.getPhonetic());
+            etMeaning.setText(existingVocab.getMeaning());
+            etExample.setText(existingVocab.getExample());
+        } else {
+            tvDialogTitle.setText("Thêm từ vựng mới");
+        }
+
+        btnCancelWord.setOnClickListener(v -> dialog.dismiss());
+
+        btnSaveWord.setOnClickListener(v -> {
+            String word = etWord.getText() != null ? etWord.getText().toString().trim() : "";
+            String phonetic = etPhonetic.getText() != null ? etPhonetic.getText().toString().trim() : "";
+            String meaning = etMeaning.getText() != null ? etMeaning.getText().toString().trim() : "";
+            String example = etExample.getText() != null ? etExample.getText().toString().trim() : "";
+
+            if (word.isEmpty() || meaning.isEmpty()) {
+                Toast.makeText(Main_TuVung.this, "Vui lòng nhập Từ tiếng Anh và Nghĩa tiếng Việt!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (existingVocab != null) {
+                existingVocab.setTopicId(chosenTopicId[0]);
+                existingVocab.setWord(word);
+                existingVocab.setPhonetic(phonetic);
+                existingVocab.setMeaning(meaning);
+                existingVocab.setExample(example);
+                dbHelper.updateVocabulary(existingVocab);
+                Toast.makeText(Main_TuVung.this, "Cập nhật từ thành công!", Toast.LENGTH_SHORT).show();
+            } else {
+                Vocabulary newVocab = new Vocabulary();
+                newVocab.setTopicId(chosenTopicId[0]);
+                newVocab.setWord(word);
+                newVocab.setPhonetic(phonetic);
+                newVocab.setMeaning(meaning);
+                newVocab.setExample(example);
+                newVocab.setIconName("ic_word_default");
+                newVocab.setLearned(false);
+
+                dbHelper.addVocabulary(newVocab);
+                Toast.makeText(Main_TuVung.this, "Thêm từ thành công!", Toast.LENGTH_SHORT).show();
+            }
+
+            loadTopicData();
+            loadVocabularyList();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void showEditTopicDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_edit_topic);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextInputEditText etTopicName = dialog.findViewById(R.id.etTopicName);
+        TextInputEditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
+        MaterialButton btnCancelTopic = dialog.findViewById(R.id.btnCancelTopic);
+        MaterialButton btnSaveTopic = dialog.findViewById(R.id.btnSaveTopic);
+
+        if (currentTopic != null) {
+            etTopicName.setText(currentTopic.getName());
+            etTopicDesc.setText(currentTopic.getDescription());
+        }
+
+        btnCancelTopic.setOnClickListener(v -> dialog.dismiss());
+
+        btnSaveTopic.setOnClickListener(v -> {
+            String name = etTopicName.getText() != null ? etTopicName.getText().toString().trim() : "";
+            String desc = etTopicDesc.getText() != null ? etTopicDesc.getText().toString().trim() : "";
+
+            if (name.isEmpty()) {
+                Toast.makeText(Main_TuVung.this, "Vui lòng nhập tên chủ đề!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            currentTopic.setName(name);
+            currentTopic.setDescription(desc);
+            dbHelper.updateTopic(currentTopic);
+
+            loadTopicData();
+            Toast.makeText(Main_TuVung.this, "Đã cập nhật chủ đề!", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void showCsvImportExportDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_csv_import_export);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextInputEditText etCsvData = dialog.findViewById(R.id.etCsvData);
+        MaterialButton btnExportCsv = dialog.findViewById(R.id.btnExportCsv);
+        MaterialButton btnImportCsv = dialog.findViewById(R.id.btnImportCsv);
+        MaterialButton btnCloseCsv = dialog.findViewById(R.id.btnCloseCsv);
+
+        btnExportCsv.setOnClickListener(v -> {
+            String csvStr = dbHelper.exportToCsv(currentTopicId);
+            etCsvData.setText(csvStr);
+
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("CSV Data", csvStr);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(Main_TuVung.this, "Đã sao chép dữ liệu CSV vào bộ nhớ tạm!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnImportCsv.setOnClickListener(v -> {
+            String inputCsv = etCsvData.getText() != null ? etCsvData.getText().toString() : "";
+            int count = dbHelper.importFromCsv(currentTopicId, inputCsv);
+            if (count > 0) {
+                Toast.makeText(Main_TuVung.this, "Đã nhập thành công " + count + " từ vựng!", Toast.LENGTH_SHORT).show();
+                loadTopicData();
+                loadVocabularyList();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(Main_TuVung.this, "Không tìm thấy dữ liệu hợp lệ để nhập!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnCloseCsv.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void confirmDeleteTopic() {
+        new AlertDialog.Builder(this)
+                .setTitle("Xóa chủ đề")
+                .setMessage("Bạn có chắc chắn muốn xóa toàn bộ chủ đề '" + (currentTopic != null ? currentTopic.getName() : "") + "' cùng tất cả từ vựng không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    dbHelper.deleteTopic(currentTopicId);
+                    Toast.makeText(Main_TuVung.this, "Đã xóa chủ đề!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void speakWord(String text) {
+        if (textToSpeech != null && text != null && !text.isEmpty()) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "VocabularySpeechId");
+        }
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            textToSpeech.setLanguage(Locale.US);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 }
