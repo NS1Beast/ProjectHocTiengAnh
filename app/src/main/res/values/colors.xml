@@ -28,4 +28,10 @@
     <color name="banner_overlay">#66000000</color>
     <color name="banner_blue_start">#1A237E</color>
     <color name="banner_blue_end">#0288D1</color>
+
+    <!-- Quiz & Flashcard extra colors -->
+    <color name="quiz_correct">#4CAF50</color>
+    <color name="quiz_wrong">#E53935</color>
+    <color name="flashcard_back_bg">#FFFDE7</color>
+    <color name="flashcard_back_border">#FFE082</color>
 </resources>

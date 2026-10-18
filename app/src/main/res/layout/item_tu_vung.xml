@@ -21,12 +21,13 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Leading Icon Box -->
+        <!-- Leading Icon Box (Hidden for plain text) -->
         <FrameLayout
             android:id="@+id/layoutIconBox"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/bg_icon_container"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -45,12 +46,12 @@
             android:id="@+id/layoutWordDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="0dp"
             android:layout_marginEnd="8dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnStatusToggle"
-            app:layout_constraintStart_toEndOf="@+id/layoutIconBox"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <!-- English Word & IPA in row or stacked -->

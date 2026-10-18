@@ -130,7 +130,7 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
     private void showAddWordWithTopicDialog() {
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_add_edit_word);
+        dialog.setContentView(R.layout.dialog_them_tu_vung);
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }

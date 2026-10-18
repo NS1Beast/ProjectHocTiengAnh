@@ -98,7 +98,7 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:paddingVertical="6dp"
-            tools:listitem="@layout/item_topic" />
+            tools:listitem="@layout/item_chu_de" />
 
     </LinearLayout>
 

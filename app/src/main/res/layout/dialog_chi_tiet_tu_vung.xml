@@ -17,7 +17,8 @@
         <FrameLayout
             android:layout_width="52dp"
             android:layout_height="52dp"
-            android:background="@drawable/bg_icon_container">
+            android:background="@drawable/bg_icon_container"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imgDetailIcon"
@@ -55,14 +56,6 @@
                 tools:text="/ˈeə.pɔːt/" />
 
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/btnSpeak"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Phát âm"
-            android:src="@drawable/ic_volume_up" />
 
     </LinearLayout>
 

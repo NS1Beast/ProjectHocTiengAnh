@@ -126,7 +126,7 @@ public class Main_ChuDe extends AppCompatActivity {
 
     private void showAddTopicDialog() {
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_add_edit_topic);
+        dialog.setContentView(R.layout.dialog_sua_chu_de);
         if (dialog.getWindow() != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }

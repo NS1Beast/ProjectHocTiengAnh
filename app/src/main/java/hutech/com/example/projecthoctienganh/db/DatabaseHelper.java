@@ -218,6 +218,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // VOCABULARY CRUD & FILTERING
+    public List<Vocabulary> getAllVocabularies(int filterType) {
+        List<Vocabulary> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selection = null;
+        if (filterType == FILTER_UNLEARNED) {
+            selection = KEY_VOCAB_IS_LEARNED + "=0";
+        } else if (filterType == FILTER_LEARNED) {
+            selection = KEY_VOCAB_IS_LEARNED + "=1";
+        }
+
+        Cursor cursor = db.query(TABLE_VOCABULARIES, null, selection,
+                null, null, null, KEY_VOCAB_ID + " DESC");
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Vocabulary vocab = new Vocabulary();
+                    vocab.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_ID)));
+                    vocab.setTopicId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_TOPIC_ID)));
+                    vocab.setWord(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_WORD)));
+                    vocab.setPhonetic(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_PHONETIC)));
+                    vocab.setMeaning(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_MEANING)));
+                    vocab.setExample(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_EXAMPLE)));
+                    vocab.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_ICON)));
+                    vocab.setLearned(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_IS_LEARNED)) == 1);
+
+                    list.add(vocab);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return list;
+    }
+
+    public List<Vocabulary> getAllVocabularies() {
+        return getAllVocabularies(FILTER_ALL);
+    }
+
     public List<Vocabulary> getVocabulariesByTopic(int topicId, int filterType) {
         List<Vocabulary> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -235,22 +274,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_VOCABULARIES, null, selection,
                 selectionArgs.toArray(new String[0]), null, null, KEY_VOCAB_ID + " DESC");
 
-        if (cursor.moveToFirst()) {
-            do {
-                Vocabulary vocab = new Vocabulary();
-                vocab.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_ID)));
-                vocab.setTopicId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_TOPIC_ID)));
-                vocab.setWord(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_WORD)));
-                vocab.setPhonetic(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_PHONETIC)));
-                vocab.setMeaning(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_MEANING)));
-                vocab.setExample(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_EXAMPLE)));
-                vocab.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_ICON)));
-                vocab.setLearned(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_IS_LEARNED)) == 1);
+        if (cursor != null)        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Vocabulary vocab = new Vocabulary();
+                    vocab.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_ID)));
+                    vocab.setTopicId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_TOPIC_ID)));
+                    vocab.setWord(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_WORD)));
+                    vocab.setPhonetic(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_PHONETIC)));
+                    vocab.setMeaning(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_MEANING)));
+                    vocab.setExample(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_EXAMPLE)));
+                    vocab.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_ICON)));
+                    vocab.setLearned(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_IS_LEARNED)) == 1);
 
-                list.add(vocab);
-            } while (cursor.moveToNext());
+                    list.add(vocab);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
         }
-        cursor.close();
         return list;
     }
 
@@ -293,61 +334,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteVocabulary(int vocabId) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_VOCABULARIES, KEY_VOCAB_ID + "=?", new String[]{String.valueOf(vocabId)});
-    }
-
-    // CSV IMPORT & EXPORT LOGIC
-    public int importFromCsv(int topicId, String csvContent) {
-        if (csvContent == null || csvContent.trim().isEmpty()) {
-            return 0;
-        }
-
-        int count = 0;
-        String[] lines = csvContent.split("\n");
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            for (String line : lines) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("Word,")) continue; // skip header or empty
-
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String word = parts[0].trim();
-                    String phonetic = parts.length > 1 ? parts[1].trim() : "";
-                    String meaning = parts.length > 2 ? parts[2].trim() : "";
-                    String example = parts.length > 3 ? parts[3].trim() : "";
-
-                    ContentValues values = new ContentValues();
-                    values.put(KEY_VOCAB_TOPIC_ID, topicId);
-                    values.put(KEY_VOCAB_WORD, word);
-                    values.put(KEY_VOCAB_PHONETIC, phonetic);
-                    values.put(KEY_VOCAB_MEANING, meaning);
-                    values.put(KEY_VOCAB_EXAMPLE, example);
-                    values.put(KEY_VOCAB_ICON, "ic_word_default");
-                    values.put(KEY_VOCAB_IS_LEARNED, 0);
-
-                    db.insert(TABLE_VOCABULARIES, null, values);
-                    count++;
-                }
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-        return count;
-    }
-
-    public String exportToCsv(int topicId) {
-        List<Vocabulary> list = getVocabulariesByTopic(topicId, FILTER_ALL);
-        StringBuilder sb = new StringBuilder();
-        sb.append("Word,Phonetic,Meaning,Example\n");
-
-        for (Vocabulary vocab : list) {
-            sb.append(vocab.getWord()).append(",")
-                    .append(vocab.getPhonetic()).append(",")
-                    .append(vocab.getMeaning()).append(",")
-                    .append(vocab.getExample()).append("\n");
-        }
-        return sb.toString();
     }
 }

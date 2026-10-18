@@ -28,12 +28,13 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Topic Icon Box -->
+            <!-- Topic Icon Box (Hidden for plain text) -->
             <FrameLayout
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_banner_gradient"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imgTopicIcon"
@@ -96,7 +97,8 @@
                 android:layout_weight="1"
                 android:max="100"
                 android:progress="50"
-                android:progressDrawable="@drawable/bg_pill_selected" />
+                android:progressTint="@color/primary"
+                android:progressBackgroundTint="@color/border_color" />
 
             <TextView
                 android:id="@+id/tvTopicStats"

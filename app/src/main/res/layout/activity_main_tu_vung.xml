@@ -89,13 +89,14 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <!-- Icon Box -->
+                            <!-- Icon Box (Hidden for plain text) -->
                             <FrameLayout
                                 android:layout_width="56dp"
                                 android:layout_height="56dp"
                                 android:background="@drawable/bg_pill_unselected"
                                 android:backgroundTint="#33FFFFFF"
-                                android:padding="10dp">
+                                android:padding="10dp"
+                                android:visibility="gone">
 
                                 <ImageView
                                     android:id="@+id/imgBannerTopicIcon"
@@ -110,7 +111,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
+                                android:layout_marginStart="0dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -145,8 +146,8 @@
                             android:layout_marginTop="16dp"
                             android:max="100"
                             android:progress="42"
-                            android:progressDrawable="@drawable/bg_pill_selected"
-                            android:progressTint="@color/white" />
+                            android:progressTint="@color/white"
+                            android:progressBackgroundTint="@color/border_color" />
 
                     </RelativeLayout>
 
@@ -215,7 +216,7 @@
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
                     tools:itemCount="5"
-                    tools:listitem="@layout/item_vocabulary" />
+                    tools:listitem="@layout/item_tu_vung" />
 
                 <!-- Empty State Layout -->
                 <LinearLayout
