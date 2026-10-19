@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,8 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,6 +23,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hutech.com.example.projecthoctienganh.adapter.TopicAdapter;
 import hutech.com.example.projecthoctienganh.db.DatabaseHelper;
@@ -34,7 +34,7 @@ public class Main_ChuDe extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private ImageButton btnBackTopic;
     private EditText etSearchTopic;
-    private RecyclerView rvTopics;
+    private ListView lvTopics;
     private FloatingActionButton fabAddTopic;
 
     private TopicAdapter adapter;
@@ -68,12 +68,11 @@ public class Main_ChuDe extends AppCompatActivity {
     private void initViews() {
         btnBackTopic = findViewById(R.id.btnBackTopic);
         etSearchTopic = findViewById(R.id.etSearchTopic);
-        rvTopics = findViewById(R.id.rvTopics);
+        lvTopics = findViewById(R.id.lvTopics);
         fabAddTopic = findViewById(R.id.fabAddTopic);
 
-        rvTopics.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TopicAdapter(this, filteredTopics);
-        rvTopics.setAdapter(adapter);
+        lvTopics.setAdapter(adapter);
     }
 
     private void setupListeners() {
@@ -81,10 +80,13 @@ public class Main_ChuDe extends AppCompatActivity {
 
         fabAddTopic.setOnClickListener(v -> showAddTopicDialog());
 
-        adapter.setOnTopicClickListener(topic -> {
-            Intent intent = new Intent(Main_ChuDe.this, Main_TuVung.class);
-            intent.putExtra(Main_TuVung.EXTRA_TOPIC_ID, topic.getId());
-            startActivity(intent);
+        lvTopics.setOnItemClickListener((parent, view, position, id) -> {
+            if (position >= 0 && position < filteredTopics.size()) {
+                Topic topic = filteredTopics.get(position);
+                Intent intent = new Intent(Main_ChuDe.this, Main_TuVung.class);
+                intent.putExtra(Main_TuVung.EXTRA_TOPIC_ID, topic.getId());
+                startActivity(intent);
+            }
         });
 
         etSearchTopic.addTextChangedListener(new TextWatcher() {
@@ -110,13 +112,14 @@ public class Main_ChuDe extends AppCompatActivity {
 
     private void filterTopics(String query) {
         filteredTopics.clear();
-        if (query.trim().isEmpty()) {
+        if (query == null || query.trim().isEmpty()) {
             filteredTopics.addAll(allTopics);
         } else {
-            String lowerQuery = query.toLowerCase().trim();
+            String lowerQuery = query.toLowerCase(Locale.getDefault()).trim();
             for (Topic t : allTopics) {
-                if (t.getName().toLowerCase().contains(lowerQuery) ||
-                        (t.getDescription() != null && t.getDescription().toLowerCase().contains(lowerQuery))) {
+                String name = t.getName() != null ? t.getName().toLowerCase(Locale.getDefault()) : "";
+                String desc = t.getDescription() != null ? t.getDescription().toLowerCase(Locale.getDefault()) : "";
+                if (name.contains(lowerQuery) || desc.contains(lowerQuery)) {
                     filteredTopics.add(t);
                 }
             }

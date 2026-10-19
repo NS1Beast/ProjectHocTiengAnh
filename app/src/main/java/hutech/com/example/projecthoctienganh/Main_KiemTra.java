@@ -322,13 +322,13 @@ public class Main_KiemTra extends AppCompatActivity {
 
         // Render question text & prompt
         if (q.questionType == TYPE_MEANING_TO_WORD) {
-            tvQuestionTypeBadge.setText("NGHĨA ➔ TỪ TIẾNG ANH");
-            tvQuestionPrompt.setText("Từ tiếng Anh nào tương ứng với nghĩa:");
+            tvQuestionTypeBadge.setText("NGHĨA / DỊCH ➔ TỪ VỰNG");
+            tvQuestionPrompt.setText("Từ vựng nào tương ứng với nghĩa:");
             tvQuestionText.setText(q.targetVocab.getMeaning());
             tvQuestionSub.setVisibility(View.GONE);
         } else {
-            tvQuestionTypeBadge.setText("TỪ TIẾNG ANH ➔ NGHĨA");
-            tvQuestionPrompt.setText("Nghĩa tiếng Việt của từ này là gì:");
+            tvQuestionTypeBadge.setText("TỪ VỰNG ➔ NGHĨA / DỊCH");
+            tvQuestionPrompt.setText("Nghĩa / Dịch tương ứng của từ này:");
             tvQuestionText.setText(q.targetVocab.getWord());
             if (q.targetVocab.getPhonetic() != null && !q.targetVocab.getPhonetic().isEmpty()) {
                 tvQuestionSub.setText(q.targetVocab.getPhonetic());

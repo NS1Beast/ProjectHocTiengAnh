@@ -84,19 +84,22 @@
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="10dp"
                 android:hint="Tìm kiếm chủ đề từ vựng..."
-                android:inputType="text"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:maxLines="1"
                 android:paddingHorizontal="12dp"
                 android:textSize="14sp" />
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- RecyclerView Topics for Vocabulary Selection -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTopicsTuVung"
+        <!-- ListView Topics for Vocabulary Selection -->
+        <ListView
+            android:id="@+id/lvTopicsTuVung"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
+            android:divider="@null"
+            android:dividerHeight="0dp"
             android:paddingVertical="6dp"
             tools:listitem="@layout/item_chu_de" />
 

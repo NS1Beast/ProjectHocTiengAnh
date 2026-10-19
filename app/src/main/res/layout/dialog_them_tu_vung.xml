@@ -36,13 +36,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:hint="Từ tiếng Anh (VD: airport)">
+        android:hint="Từ vựng (VD: airport, 안녕하세요...)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etWord"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="textMultiLine|textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -50,13 +50,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:hint="Phiên âm IPA (VD: /ˈeə.pɔːt/)">
+        android:hint="Phiên âm / Cách đọc (VD: /ˈeə.pɔːt/)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPhonetic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="textMultiLine|textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,13 +64,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:hint="Nghĩa tiếng Việt (VD: sân bay)">
+        android:hint="Nghĩa / Dịch nghĩa (VD: sân bay, 공항...)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etMeaning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="textMultiLine|textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -84,7 +84,7 @@
             android:id="@+id/etExample"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textNoSuggestions"
             android:minLines="2" />
     </com.google.android.material.textfield.TextInputLayout>
 

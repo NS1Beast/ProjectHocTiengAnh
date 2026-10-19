@@ -128,7 +128,7 @@
                                 android:layout_height="wrap_content"
                                 android:checked="true"
                                 android:paddingVertical="8dp"
-                                android:text="Nghĩa tiếng Việt -> Từ tiếng Anh"
+                                android:text="Nghĩa / Dịch -> Từ vựng"
                                 android:textSize="14sp" />
 
                             <RadioButton
@@ -136,7 +136,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:paddingVertical="8dp"
-                                android:text="Từ tiếng Anh -> Nghĩa tiếng Việt"
+                                android:text="Từ vựng -> Nghĩa / Dịch"
                                 android:textSize="14sp" />
 
                             <RadioButton

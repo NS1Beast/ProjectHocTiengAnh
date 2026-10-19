@@ -208,14 +208,15 @@
                 </LinearLayout>
 
                 <!-- Vocabulary List View -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvVocabulary"
+                <ListView
+                    android:id="@+id/lvVocabulary"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:layout_marginTop="12dp"
                     android:clipToPadding="false"
-                    android:nestedScrollingEnabled="false"
-                    tools:itemCount="5"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
                     tools:listitem="@layout/item_tu_vung" />
 
                 <!-- Empty State Layout -->

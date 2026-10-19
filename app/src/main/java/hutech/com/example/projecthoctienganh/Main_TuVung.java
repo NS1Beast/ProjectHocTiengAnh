@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,8 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -51,7 +50,7 @@ public class Main_TuVung extends AppCompatActivity {
     private ProgressBar bannerProgressBar;
 
     private TextView btnFilterAll, btnFilterUnlearned, btnFilterLearned;
-    private RecyclerView rvVocabulary;
+    private ListView lvVocabulary;
     private LinearLayout layoutEmptyState;
     private TextView tvEmptyMessage;
     private FloatingActionButton fabAddWord;
@@ -98,14 +97,13 @@ public class Main_TuVung extends AppCompatActivity {
         btnFilterUnlearned = findViewById(R.id.btnFilterUnlearned);
         btnFilterLearned = findViewById(R.id.btnFilterLearned);
 
-        rvVocabulary = findViewById(R.id.rvVocabulary);
+        lvVocabulary = findViewById(R.id.lvVocabulary);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
         fabAddWord = findViewById(R.id.fabAddWord);
 
-        rvVocabulary.setLayoutManager(new LinearLayoutManager(this));
         adapter = new VocabularyAdapter(this, currentVocabularyList);
-        rvVocabulary.setAdapter(adapter);
+        lvVocabulary.setAdapter(adapter);
     }
 
     private void setupListeners() {
@@ -119,7 +117,12 @@ public class Main_TuVung extends AppCompatActivity {
 
         fabAddWord.setOnClickListener(v -> showAddEditWordDialog(null));
 
-        adapter.setOnItemClickListener((vocabulary, position) -> showWordOptionsDialog(vocabulary));
+        lvVocabulary.setOnItemClickListener((parent, view, position, id) -> {
+            if (position >= 0 && position < currentVocabularyList.size()) {
+                Vocabulary vocabulary = currentVocabularyList.get(position);
+                showWordOptionsDialog(vocabulary);
+            }
+        });
 
         adapter.setOnStatusClickListener((vocabulary, position) -> {
             boolean newStatus = !vocabulary.isLearned();
@@ -132,8 +135,6 @@ public class Main_TuVung extends AppCompatActivity {
             String statusText = newStatus ? "Đã đánh dấu thuộc từ" : "Đã chuyển về chưa thuộc";
             Toast.makeText(Main_TuVung.this, statusText + ": " + vocabulary.getWord(), Toast.LENGTH_SHORT).show();
         });
-
-        adapter.setOnItemLongClickListener((vocabulary, position) -> showWordOptionsDialog(vocabulary));
     }
 
     private void setFilter(int filterType) {
@@ -192,7 +193,7 @@ public class Main_TuVung extends AppCompatActivity {
 
         if (currentVocabularyList.isEmpty()) {
             layoutEmptyState.setVisibility(View.VISIBLE);
-            rvVocabulary.setVisibility(View.GONE);
+            lvVocabulary.setVisibility(View.GONE);
 
             if (currentFilter == DatabaseHelper.FILTER_UNLEARNED) {
                 tvEmptyMessage.setText("Bạn đã thuộc tất cả từ trong chủ đề này!");
@@ -203,7 +204,7 @@ public class Main_TuVung extends AppCompatActivity {
             }
         } else {
             layoutEmptyState.setVisibility(View.GONE);
-            rvVocabulary.setVisibility(View.VISIBLE);
+            lvVocabulary.setVisibility(View.VISIBLE);
         }
     }
 
@@ -344,7 +345,7 @@ public class Main_TuVung extends AppCompatActivity {
             String example = etExample.getText() != null ? etExample.getText().toString().trim() : "";
 
             if (word.isEmpty() || meaning.isEmpty()) {
-                Toast.makeText(Main_TuVung.this, "Vui lòng nhập Từ tiếng Anh và Nghĩa tiếng Việt!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Main_TuVung.this, "Vui lòng nhập đầy đủ Từ vựng và Nghĩa!", Toast.LENGTH_SHORT).show();
                 return;
             }
 

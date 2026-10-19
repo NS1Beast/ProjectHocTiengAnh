@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,8 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,6 +26,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hutech.com.example.projecthoctienganh.adapter.TopicAdapter;
 import hutech.com.example.projecthoctienganh.db.DatabaseHelper;
@@ -38,7 +38,7 @@ public class Main_ChonTuVung extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private ImageButton btnBackTuVung;
     private EditText etSearchTopicTuVung;
-    private RecyclerView rvTopicsTuVung;
+    private ListView lvTopicsTuVung;
     private FloatingActionButton fabAddWordGlobal;
 
     private TopicAdapter adapter;
@@ -72,12 +72,11 @@ public class Main_ChonTuVung extends AppCompatActivity {
     private void initViews() {
         btnBackTuVung = findViewById(R.id.btnBackTuVung);
         etSearchTopicTuVung = findViewById(R.id.etSearchTopicTuVung);
-        rvTopicsTuVung = findViewById(R.id.rvTopicsTuVung);
+        lvTopicsTuVung = findViewById(R.id.lvTopicsTuVung);
         fabAddWordGlobal = findViewById(R.id.fabAddWordGlobal);
 
-        rvTopicsTuVung.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TopicAdapter(this, filteredTopics);
-        rvTopicsTuVung.setAdapter(adapter);
+        lvTopicsTuVung.setAdapter(adapter);
     }
 
     private void setupListeners() {
@@ -85,10 +84,13 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
         fabAddWordGlobal.setOnClickListener(v -> showAddWordWithTopicDialog());
 
-        adapter.setOnTopicClickListener(topic -> {
-            Intent intent = new Intent(Main_ChonTuVung.this, Main_TuVung.class);
-            intent.putExtra(Main_TuVung.EXTRA_TOPIC_ID, topic.getId());
-            startActivity(intent);
+        lvTopicsTuVung.setOnItemClickListener((parent, view, position, id) -> {
+            if (position >= 0 && position < filteredTopics.size()) {
+                Topic topic = filteredTopics.get(position);
+                Intent intent = new Intent(Main_ChonTuVung.this, Main_TuVung.class);
+                intent.putExtra(Main_TuVung.EXTRA_TOPIC_ID, topic.getId());
+                startActivity(intent);
+            }
         });
 
         etSearchTopicTuVung.addTextChangedListener(new TextWatcher() {
@@ -114,13 +116,14 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
     private void filterTopics(String query) {
         filteredTopics.clear();
-        if (query.trim().isEmpty()) {
+        if (query == null || query.trim().isEmpty()) {
             filteredTopics.addAll(allTopics);
         } else {
-            String lowerQuery = query.toLowerCase().trim();
+            String lowerQuery = query.toLowerCase(Locale.getDefault()).trim();
             for (Topic t : allTopics) {
-                if (t.getName().toLowerCase().contains(lowerQuery) ||
-                        (t.getDescription() != null && t.getDescription().toLowerCase().contains(lowerQuery))) {
+                String name = t.getName() != null ? t.getName().toLowerCase(Locale.getDefault()) : "";
+                String desc = t.getDescription() != null ? t.getDescription().toLowerCase(Locale.getDefault()) : "";
+                if (name.contains(lowerQuery) || desc.contains(lowerQuery)) {
                     filteredTopics.add(t);
                 }
             }
@@ -177,7 +180,7 @@ public class Main_ChonTuVung extends AppCompatActivity {
             String example = etExample.getText() != null ? etExample.getText().toString().trim() : "";
 
             if (word.isEmpty() || meaning.isEmpty()) {
-                Toast.makeText(Main_ChonTuVung.this, "Vui lòng nhập Từ tiếng Anh và Nghĩa tiếng Việt!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Main_ChonTuVung.this, "Vui lòng nhập đầy đủ Từ vựng và Nghĩa!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
