@@ -8,6 +8,8 @@ android {
         version = release(37)
     }
 
+    base.archivesName.set("newlanguage")
+
     defaultConfig {
         applicationId = "hutech.com.example.projecthoctienganh"
         minSdk = 24

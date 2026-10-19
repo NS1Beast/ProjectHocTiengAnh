@@ -20,13 +20,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Tên chủ đề">
+        android:hint="Tên chủ đề (VD: Du lịch, Thể thao...)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etTopicName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine|textNoSuggestions" />
+            android:inputType="textCapSentences" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -40,7 +40,7 @@
             android:id="@+id/etTopicDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine|textNoSuggestions" />
+            android:inputType="textCapSentences|textMultiLine" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
