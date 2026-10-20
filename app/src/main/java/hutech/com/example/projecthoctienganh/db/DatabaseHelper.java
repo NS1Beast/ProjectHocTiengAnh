@@ -15,7 +15,7 @@ import hutech.com.example.projecthoctienganh.model.Vocabulary;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "EnglishLearning.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Filter Constants
     public static final int FILTER_ALL = 0;
@@ -65,8 +65,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(CREATE_TOPICS_TABLE);
         db.execSQL(CREATE_VOCABULARIES_TABLE);
-
-        seedSampleData(db);
     }
 
     @Override
@@ -74,55 +72,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_VOCABULARIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TOPICS);
         onCreate(db);
-    }
-
-    private void seedSampleData(SQLiteDatabase db) {
-        // Topic 1: Du lịch (Travel)
-        long topic1Id = insertTopicDirect(db, "Du lịch", "Từ vựng thông dụng khi đi du lịch và di chuyển", "ic_flight");
-        insertVocabDirect(db, topic1Id, "airport", "/ˈeə.pɔːt/", "sân bay", "I arrived at the airport two hours early.", "ic_flight", 1);
-        insertVocabDirect(db, topic1Id, "ticket", "/ˈtɪk.ɪt/", "vé/vé máy bay", "Do you have your flight ticket ready?", "ic_flight", 1);
-        insertVocabDirect(db, topic1Id, "luggage", "/ˈlʌɡ.ɪdʒ/", "hành lý", "Please keep an eye on your luggage.", "ic_flight", 0);
-        insertVocabDirect(db, topic1Id, "passport", "/ˈpɑːs.pɔːt/", "hộ chiếu", "You need a valid passport to travel abroad.", "ic_flight", 1);
-        insertVocabDirect(db, topic1Id, "destination", "/ˌdes.tɪˈneɪ.ʃən/", "điểm đến", "Paris is a popular travel destination.", "ic_flight", 0);
-        insertVocabDirect(db, topic1Id, "boarding pass", "/ˈbɔː.dɪŋ ˌpɑːs/", "thẻ lên máy bay", "Show your boarding pass at the gate.", "ic_flight", 0);
-        insertVocabDirect(db, topic1Id, "flight", "/flaɪt/", "chuyến bay", "Our flight was delayed by thirty minutes.", "ic_flight", 1);
-        insertVocabDirect(db, topic1Id, "sightseeing", "/ˈsaɪtˌsiː.ɪŋ/", "tham quan ngắm cảnh", "We went sightseeing in the city center.", "ic_flight", 0);
-
-        // Topic 2: Khách sạn (Hotel)
-        long topic2Id = insertTopicDirect(db, "Khách sạn", "Từ vựng về dịch vụ đặt phòng và lưu trú", "ic_hotel");
-        insertVocabDirect(db, topic2Id, "reservation", "/ˌrez.əˈveɪ.ʃən/", "sự đặt phòng trước", "I have a reservation under the name Smith.", "ic_hotel", 1);
-        insertVocabDirect(db, topic2Id, "reception", "/rɪˈsep.ʃən/", "quầy lễ tân", "Please check in at the reception desk.", "ic_hotel", 1);
-        insertVocabDirect(db, topic2Id, "check-in", "/ˈtʃek.ɪn/", "làm thủ tục nhận phòng", "Check-in time is after 2 PM.", "ic_hotel", 0);
-        insertVocabDirect(db, topic2Id, "room service", "/ˈruːm ˌsɜː.vɪs/", "dịch vụ phòng", "We ordered breakfast through room service.", "ic_hotel", 0);
-        insertVocabDirect(db, topic2Id, "amenities", "/əˈmiː.nə.tiz/", "tiện nghi khách sạn", "The hotel offers free Wi-Fi and swimming pool amenities.", "ic_hotel", 1);
-
-        // Topic 3: Nhà hàng (Restaurant)
-        long topic3Id = insertTopicDirect(db, "Nhà hàng", "Giao tiếp và từ vựng trong ẩm thực, nhà hàng", "ic_restaurant");
-        insertVocabDirect(db, topic3Id, "menu", "/ˈmen.juː/", "thực đơn", "May I see the menu, please?", "ic_restaurant", 1);
-        insertVocabDirect(db, topic3Id, "waiter", "/ˈweɪ.tər/", "bồi bàn nam", "The waiter took our dinner order promptly.", "ic_restaurant", 0);
-        insertVocabDirect(db, topic3Id, "bill", "/bɪl/", "hóa đơn thanh toán", "Could we get the bill, please?", "ic_restaurant", 1);
-        insertVocabDirect(db, topic3Id, "delicious", "/dɪˈlɪʃ.əs/", "thơm ngon", "The soup tasted absolutely delicious.", "ic_restaurant", 1);
-        insertVocabDirect(db, topic3Id, "dessert", "/dɪˈzɜːt/", "món tráng miệng", "We ordered chocolate cake for dessert.", "ic_restaurant", 0);
-    }
-
-    private long insertTopicDirect(SQLiteDatabase db, String name, String desc, String icon) {
-        ContentValues values = new ContentValues();
-        values.put(KEY_TOPIC_NAME, name);
-        values.put(KEY_TOPIC_DESC, desc);
-        values.put(KEY_TOPIC_ICON, icon);
-        return db.insert(TABLE_TOPICS, null, values);
-    }
-
-    private void insertVocabDirect(SQLiteDatabase db, long topicId, String word, String phonetic, String meaning, String example, String icon, int isLearned) {
-        ContentValues values = new ContentValues();
-        values.put(KEY_VOCAB_TOPIC_ID, topicId);
-        values.put(KEY_VOCAB_WORD, word);
-        values.put(KEY_VOCAB_PHONETIC, phonetic);
-        values.put(KEY_VOCAB_MEANING, meaning);
-        values.put(KEY_VOCAB_EXAMPLE, example);
-        values.put(KEY_VOCAB_ICON, icon);
-        values.put(KEY_VOCAB_IS_LEARNED, isLearned);
-        db.insert(TABLE_VOCABULARIES, null, values);
     }
 
     // TOPIC CRUD & STATS

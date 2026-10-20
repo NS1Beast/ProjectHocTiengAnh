@@ -15,17 +15,26 @@ import hutech.com.example.projecthoctienganh.model.Vocabulary;
 
 public class VocabularyAdapter extends BaseAdapter {
 
+    public interface OnItemClickListener {
+        void onItemClick(Vocabulary vocabulary, int position);
+    }
+
     public interface OnStatusClickListener {
         void OnStatusClick(Vocabulary vocabulary, int position);
     }
 
     private final Context context;
     private List<Vocabulary> vocabularyList;
+    private OnItemClickListener itemClickListener;
     private OnStatusClickListener statusClickListener;
 
     public VocabularyAdapter(Context context, List<Vocabulary> vocabularyList) {
         this.context = context;
         this.vocabularyList = vocabularyList;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.itemClickListener = listener;
     }
 
     public void setOnStatusClickListener(OnStatusClickListener listener) {
@@ -82,6 +91,12 @@ public class VocabularyAdapter extends BaseAdapter {
             holder.btnStatusToggle.setOnClickListener(v -> {
                 if (statusClickListener != null) {
                     statusClickListener.OnStatusClick(vocab, position);
+                }
+            });
+
+            convertView.setOnClickListener(v -> {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(vocab, position);
                 }
             });
         }

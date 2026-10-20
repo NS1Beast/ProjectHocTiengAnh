@@ -117,6 +117,8 @@ public class Main_TuVung extends AppCompatActivity {
 
         fabAddWord.setOnClickListener(v -> showAddEditWordDialog(null));
 
+        adapter.setOnItemClickListener((vocabulary, position) -> showWordOptionsDialog(vocabulary));
+
         lvVocabulary.setOnItemClickListener((parent, view, position, id) -> {
             if (position >= 0 && position < currentVocabularyList.size()) {
                 Vocabulary vocabulary = currentVocabularyList.get(position);
