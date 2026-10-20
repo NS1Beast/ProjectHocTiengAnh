@@ -19,7 +19,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,8 +133,8 @@ public class Main_ChuDe extends AppCompatActivity {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        TextInputEditText etTopicName = dialog.findViewById(R.id.etTopicName);
-        TextInputEditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = dialog.findViewById(R.id.etTopicName);
+        EditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
         MaterialButton btnCancelTopic = dialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = dialog.findViewById(R.id.btnSaveTopic);
 

@@ -15,14 +15,41 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- Topic Selection Dropdown -->
+    <!-- Topic Selection Header Row with (+) Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Chủ đề:"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnQuickAddTopic"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:padding="0dp"
+            android:text="+ Thêm chủ đề mới"
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutSelectTopic"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Chọn chủ đề">
+        android:layout_marginTop="4dp">
 
         <AutoCompleteTextView
             android:id="@+id/actvSelectTopic"
@@ -31,62 +58,87 @@
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+    <!-- Word Plain Text EditText -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Từ vựng (VD: airport...)">
+        android:layout_marginTop="12dp"
+        android:text="Từ vựng:"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etWord"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences|textMultiLine" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <EditText
+        android:id="@+id/etWord"
         android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:hint="Nhập từ vựng (VD: airport...)"
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
+        android:textSize="15sp" />
+
+    <!-- Phonetic Plain Text EditText -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Phiên âm / Cách đọc (VD: /ˈeə.pɔːt/)">
+        android:layout_marginTop="12dp"
+        android:text="Phiên âm / Cách đọc:"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPhonetic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <EditText
+        android:id="@+id/etPhonetic"
         android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:hint="Nhập phiên âm (VD: /ˈeə.pɔːt/)"
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
+        android:textSize="15sp" />
+
+    <!-- Meaning Plain Text EditText -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Nghĩa / Dịch nghĩa (VD: sân bay...)">
+        android:layout_marginTop="12dp"
+        android:text="Nghĩa / Dịch nghĩa:"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etMeaning"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences|textMultiLine" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <EditText
+        android:id="@+id/etMeaning"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Ví dụ câu (Không bắt buộc)">
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:hint="Nhập nghĩa (VD: sân bay...)"
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
+        android:textSize="15sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etExample"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences|textMultiLine"
-            android:minLines="2" />
-    </com.google.android.material.textfield.TextInputLayout>
+    <!-- Example Plain Text EditText -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Ví dụ câu (Không bắt buộc):"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/etExample"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:gravity="top|start"
+        android:hint="Nhập ví dụ câu"
+        android:inputType="textCapSentences|textMultiLine"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

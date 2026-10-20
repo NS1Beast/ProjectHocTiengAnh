@@ -274,7 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_VOCABULARIES, null, selection,
                 selectionArgs.toArray(new String[0]), null, null, KEY_VOCAB_ID + " DESC");
 
-        if (cursor != null)        if (cursor != null) {
+        if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
                     Vocabulary vocab = new Vocabulary();

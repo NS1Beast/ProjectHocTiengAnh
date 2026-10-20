@@ -190,7 +190,7 @@
                             android:background="@drawable/bg_pill_unselected"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="4dp"
-                            android:text="MẶT TRƯỚC - TỪ TIẾNG ANH"
+                            android:text="MẶT TRƯỚC - TỪ NƯỚC NGOÀI"
                             android:textColor="@color/primary"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -232,7 +232,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:visibility="gone">
+                        android:visibility="invisible">
 
                         <TextView
                             android:layout_width="wrap_content"

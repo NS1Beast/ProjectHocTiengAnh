@@ -15,33 +15,43 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Tên chủ đề (VD: Du lịch, Thể thao...)">
+        android:text="Tên chủ đề:"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etTopicName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <EditText
+        android:id="@+id/etTopicName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Mô tả chủ đề">
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:hint="Nhập tên chủ đề (VD: Du lịch, Thể thao...)"
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
+        android:textSize="15sp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etTopicDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences|textMultiLine" />
-    </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Mô tả chủ đề:"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/etTopicDesc"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pill_unselected"
+        android:hint="Nhập mô tả chủ đề"
+        android:inputType="textCapSentences"
+        android:paddingHorizontal="12dp"
+        android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

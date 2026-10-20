@@ -22,7 +22,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,10 +139,11 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
         TextView tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
         AutoCompleteTextView actvSelectTopic = dialog.findViewById(R.id.actvSelectTopic);
-        TextInputEditText etWord = dialog.findViewById(R.id.etWord);
-        TextInputEditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
-        TextInputEditText etMeaning = dialog.findViewById(R.id.etMeaning);
-        TextInputEditText etExample = dialog.findViewById(R.id.etExample);
+        MaterialButton btnQuickAddTopic = dialog.findViewById(R.id.btnQuickAddTopic);
+        EditText etWord = dialog.findViewById(R.id.etWord);
+        EditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
+        EditText etMeaning = dialog.findViewById(R.id.etMeaning);
+        EditText etExample = dialog.findViewById(R.id.etExample);
         MaterialButton btnCancelWord = dialog.findViewById(R.id.btnCancelWord);
         MaterialButton btnSaveWord = dialog.findViewById(R.id.btnSaveWord);
 
@@ -151,25 +151,27 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
         // Load topics for Dropdown
         List<Topic> topicsList = dbHelper.getAllTopics();
-        if (topicsList.isEmpty()) {
-            Toast.makeText(this, "Chưa có chủ đề nào, vui lòng tạo chủ đề trước!", Toast.LENGTH_SHORT).show();
-            return;
+        final int[] chosenTopicId = {topicsList.isEmpty() ? -1 : topicsList.get(0).getId()};
+
+        if (!topicsList.isEmpty()) {
+            List<String> topicNames = new ArrayList<>();
+            for (Topic t : topicsList) {
+                topicNames.add(t.getName());
+            }
+
+            ArrayAdapter<String> topicAdapter = new ArrayAdapter<>(
+                    this, android.R.layout.simple_dropdown_item_1line, topicNames);
+            actvSelectTopic.setAdapter(topicAdapter);
+            actvSelectTopic.setText(topicNames.get(0), false);
+
+            actvSelectTopic.setOnItemClickListener((parent, view, position, id) -> {
+                chosenTopicId[0] = topicsList.get(position).getId();
+            });
         }
 
-        List<String> topicNames = new ArrayList<>();
-        for (Topic t : topicsList) {
-            topicNames.add(t.getName());
+        if (btnQuickAddTopic != null) {
+            btnQuickAddTopic.setOnClickListener(v -> showQuickAddTopicDialog(actvSelectTopic, chosenTopicId));
         }
-
-        ArrayAdapter<String> topicAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_dropdown_item_1line, topicNames);
-        actvSelectTopic.setAdapter(topicAdapter);
-        actvSelectTopic.setText(topicNames.get(0), false);
-
-        final int[] chosenTopicId = {topicsList.get(0).getId()};
-        actvSelectTopic.setOnItemClickListener((parent, view, position, id) -> {
-            chosenTopicId[0] = topicsList.get(position).getId();
-        });
 
         btnCancelWord.setOnClickListener(v -> dialog.dismiss());
 
@@ -178,6 +180,11 @@ public class Main_ChonTuVung extends AppCompatActivity {
             String phonetic = etPhonetic.getText() != null ? etPhonetic.getText().toString().trim() : "";
             String meaning = etMeaning.getText() != null ? etMeaning.getText().toString().trim() : "";
             String example = etExample.getText() != null ? etExample.getText().toString().trim() : "";
+
+            if (chosenTopicId[0] == -1) {
+                Toast.makeText(Main_ChonTuVung.this, "Chưa có chủ đề nào, hãy nhấn nút (+ Thêm chủ đề mới) trước!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (word.isEmpty() || meaning.isEmpty()) {
                 Toast.makeText(Main_ChonTuVung.this, "Vui lòng nhập đầy đủ Từ vựng và Nghĩa!", Toast.LENGTH_SHORT).show();
@@ -201,5 +208,69 @@ public class Main_ChonTuVung extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void showQuickAddTopicDialog(AutoCompleteTextView actvSelectTopic, final int[] chosenTopicId) {
+        Dialog topicDialog = new Dialog(this);
+        topicDialog.setContentView(R.layout.dialog_sua_chu_de);
+        if (topicDialog.getWindow() != null) {
+            topicDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextView tvTopicDialogTitle = topicDialog.findViewById(R.id.tvTopicDialogTitle);
+        if (tvTopicDialogTitle != null) {
+            tvTopicDialogTitle.setText("Thêm chủ đề mới");
+        }
+
+        EditText etTopicName = topicDialog.findViewById(R.id.etTopicName);
+        EditText etTopicDesc = topicDialog.findViewById(R.id.etTopicDesc);
+        MaterialButton btnCancelTopic = topicDialog.findViewById(R.id.btnCancelTopic);
+        MaterialButton btnSaveTopic = topicDialog.findViewById(R.id.btnSaveTopic);
+
+        btnCancelTopic.setOnClickListener(v -> topicDialog.dismiss());
+
+        btnSaveTopic.setOnClickListener(v -> {
+            String name = etTopicName.getText() != null ? etTopicName.getText().toString().trim() : "";
+            String desc = etTopicDesc.getText() != null ? etTopicDesc.getText().toString().trim() : "";
+
+            if (name.isEmpty()) {
+                Toast.makeText(Main_ChonTuVung.this, "Vui lòng nhập tên chủ đề!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Topic newTopic = new Topic();
+            newTopic.setName(name);
+            newTopic.setDescription(desc);
+            newTopic.setIconName("ic_flight");
+
+            long newId = dbHelper.addTopic(newTopic);
+            Toast.makeText(Main_ChonTuVung.this, "Thêm chủ đề mới thành công!", Toast.LENGTH_SHORT).show();
+
+            // Refresh topics list in dropdown
+            List<Topic> updatedTopicsList = dbHelper.getAllTopics();
+            List<String> topicNames = new ArrayList<>();
+            int newTopicIndex = 0;
+            for (int i = 0; i < updatedTopicsList.size(); i++) {
+                Topic t = updatedTopicsList.get(i);
+                topicNames.add(t.getName());
+                if (t.getId() == (int) newId) {
+                    newTopicIndex = i;
+                }
+            }
+
+            ArrayAdapter<String> topicAdapter = new ArrayAdapter<>(
+                    Main_ChonTuVung.this, android.R.layout.simple_dropdown_item_1line, topicNames);
+            actvSelectTopic.setAdapter(topicAdapter);
+
+            if (!updatedTopicsList.isEmpty()) {
+                actvSelectTopic.setText(updatedTopicsList.get(newTopicIndex).getName(), false);
+                chosenTopicId[0] = (int) newId;
+            }
+
+            loadTopics();
+            topicDialog.dismiss();
+        });
+
+        topicDialog.show();
     }
 }

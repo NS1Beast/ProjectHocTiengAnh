@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -50,7 +49,6 @@ public class Main_KiemTra extends AppCompatActivity {
     private ScrollView layoutSetupQuiz;
     private Spinner spTopicQuiz, spQuestionCountQuiz;
     private RadioGroup rgQuizType;
-    private RadioButton rbMeaningToWord, rbWordToMeaning, rbMixedQuiz;
     private MaterialButton btnStartQuiz;
 
     // Playing Views
@@ -109,9 +107,6 @@ public class Main_KiemTra extends AppCompatActivity {
         spTopicQuiz = findViewById(R.id.spTopicQuiz);
         spQuestionCountQuiz = findViewById(R.id.spQuestionCountQuiz);
         rgQuizType = findViewById(R.id.rgQuizType);
-        rbMeaningToWord = findViewById(R.id.rbMeaningToWord);
-        rbWordToMeaning = findViewById(R.id.rbWordToMeaning);
-        rbMixedQuiz = findViewById(R.id.rbMixedQuiz);
         btnStartQuiz = findViewById(R.id.btnStartQuiz);
 
         // Playing Layout

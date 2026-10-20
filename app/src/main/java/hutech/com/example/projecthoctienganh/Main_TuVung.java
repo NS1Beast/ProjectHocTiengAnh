@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,7 +26,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -294,10 +294,11 @@ public class Main_TuVung extends AppCompatActivity {
 
         TextView tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
         AutoCompleteTextView actvSelectTopic = dialog.findViewById(R.id.actvSelectTopic);
-        TextInputEditText etWord = dialog.findViewById(R.id.etWord);
-        TextInputEditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
-        TextInputEditText etMeaning = dialog.findViewById(R.id.etMeaning);
-        TextInputEditText etExample = dialog.findViewById(R.id.etExample);
+        MaterialButton btnQuickAddTopic = dialog.findViewById(R.id.btnQuickAddTopic);
+        EditText etWord = dialog.findViewById(R.id.etWord);
+        EditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
+        EditText etMeaning = dialog.findViewById(R.id.etMeaning);
+        EditText etExample = dialog.findViewById(R.id.etExample);
         MaterialButton btnCancelWord = dialog.findViewById(R.id.btnCancelWord);
         MaterialButton btnSaveWord = dialog.findViewById(R.id.btnSaveWord);
 
@@ -325,6 +326,10 @@ public class Main_TuVung extends AppCompatActivity {
         actvSelectTopic.setOnItemClickListener((parent, view, position, id) -> {
             chosenTopicId[0] = topicsList.get(position).getId();
         });
+
+        if (btnQuickAddTopic != null) {
+            btnQuickAddTopic.setOnClickListener(v -> showQuickAddTopicDialog(actvSelectTopic, chosenTopicId));
+        }
 
         if (existingVocab != null) {
             tvDialogTitle.setText("Chỉnh sửa từ vựng");
@@ -379,6 +384,70 @@ public class Main_TuVung extends AppCompatActivity {
         dialog.show();
     }
 
+    private void showQuickAddTopicDialog(AutoCompleteTextView actvSelectTopic, final int[] chosenTopicId) {
+        Dialog topicDialog = new Dialog(this);
+        topicDialog.setContentView(R.layout.dialog_sua_chu_de);
+        if (topicDialog.getWindow() != null) {
+            topicDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        TextView tvTopicDialogTitle = topicDialog.findViewById(R.id.tvTopicDialogTitle);
+        if (tvTopicDialogTitle != null) {
+            tvTopicDialogTitle.setText("Thêm chủ đề mới");
+        }
+
+        EditText etTopicName = topicDialog.findViewById(R.id.etTopicName);
+        EditText etTopicDesc = topicDialog.findViewById(R.id.etTopicDesc);
+        MaterialButton btnCancelTopic = topicDialog.findViewById(R.id.btnCancelTopic);
+        MaterialButton btnSaveTopic = topicDialog.findViewById(R.id.btnSaveTopic);
+
+        btnCancelTopic.setOnClickListener(v -> topicDialog.dismiss());
+
+        btnSaveTopic.setOnClickListener(v -> {
+            String name = etTopicName.getText() != null ? etTopicName.getText().toString().trim() : "";
+            String desc = etTopicDesc.getText() != null ? etTopicDesc.getText().toString().trim() : "";
+
+            if (name.isEmpty()) {
+                Toast.makeText(Main_TuVung.this, "Vui lòng nhập tên chủ đề!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Topic newTopic = new Topic();
+            newTopic.setName(name);
+            newTopic.setDescription(desc);
+            newTopic.setIconName("ic_flight");
+
+            long newId = dbHelper.addTopic(newTopic);
+            Toast.makeText(Main_TuVung.this, "Thêm chủ đề mới thành công!", Toast.LENGTH_SHORT).show();
+
+            // Refresh topics list in dropdown
+            List<Topic> updatedTopicsList = dbHelper.getAllTopics();
+            List<String> topicNames = new ArrayList<>();
+            int newTopicIndex = 0;
+            for (int i = 0; i < updatedTopicsList.size(); i++) {
+                Topic t = updatedTopicsList.get(i);
+                topicNames.add(t.getName());
+                if (t.getId() == (int) newId) {
+                    newTopicIndex = i;
+                }
+            }
+
+            ArrayAdapter<String> topicAdapter = new ArrayAdapter<>(
+                    Main_TuVung.this, android.R.layout.simple_dropdown_item_1line, topicNames);
+            actvSelectTopic.setAdapter(topicAdapter);
+
+            if (!updatedTopicsList.isEmpty()) {
+                actvSelectTopic.setText(updatedTopicsList.get(newTopicIndex).getName(), false);
+                chosenTopicId[0] = (int) newId;
+            }
+
+            loadTopicData();
+            topicDialog.dismiss();
+        });
+
+        topicDialog.show();
+    }
+
     private void showEditTopicDialog() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_sua_chu_de);
@@ -386,8 +455,8 @@ public class Main_TuVung extends AppCompatActivity {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        TextInputEditText etTopicName = dialog.findViewById(R.id.etTopicName);
-        TextInputEditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = dialog.findViewById(R.id.etTopicName);
+        EditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
         MaterialButton btnCancelTopic = dialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = dialog.findViewById(R.id.btnSaveTopic);
 
