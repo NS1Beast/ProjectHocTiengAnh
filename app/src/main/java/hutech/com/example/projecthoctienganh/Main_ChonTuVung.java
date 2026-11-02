@@ -70,7 +70,7 @@ public class Main_ChonTuVung extends AppCompatActivity {
 
     private void initViews() {
         btnBackTuVung = findViewById(R.id.btnBackTuVung);
-        etSearchTopicTuVung = findViewById(R.id.etSearchTopicTuVung);
+        etSearchTopicTuVung = findViewById(R.id.tv_search_topic_tu_vung);
         lvTopicsTuVung = findViewById(R.id.lvTopicsTuVung);
         fabAddWordGlobal = findViewById(R.id.fabAddWordGlobal);
 
@@ -140,10 +140,10 @@ public class Main_ChonTuVung extends AppCompatActivity {
         TextView tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
         AutoCompleteTextView actvSelectTopic = dialog.findViewById(R.id.actvSelectTopic);
         MaterialButton btnQuickAddTopic = dialog.findViewById(R.id.btnQuickAddTopic);
-        EditText etWord = dialog.findViewById(R.id.etWord);
-        EditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
-        EditText etMeaning = dialog.findViewById(R.id.etMeaning);
-        EditText etExample = dialog.findViewById(R.id.etExample);
+        EditText etWord = dialog.findViewById(R.id.tv_word);
+        EditText etPhonetic = dialog.findViewById(R.id.tv_phonetic);
+        EditText etMeaning = dialog.findViewById(R.id.tv_meaning);
+        EditText etExample = dialog.findViewById(R.id.tv_example);
         MaterialButton btnCancelWord = dialog.findViewById(R.id.btnCancelWord);
         MaterialButton btnSaveWord = dialog.findViewById(R.id.btnSaveWord);
 
@@ -197,7 +197,6 @@ public class Main_ChonTuVung extends AppCompatActivity {
             newVocab.setPhonetic(phonetic);
             newVocab.setMeaning(meaning);
             newVocab.setExample(example);
-            newVocab.setIconName("ic_word_default");
             newVocab.setLearned(false);
 
             dbHelper.addVocabulary(newVocab);
@@ -222,8 +221,8 @@ public class Main_ChonTuVung extends AppCompatActivity {
             tvTopicDialogTitle.setText("Thêm chủ đề mới");
         }
 
-        EditText etTopicName = topicDialog.findViewById(R.id.etTopicName);
-        EditText etTopicDesc = topicDialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = topicDialog.findViewById(R.id.tv_topic_name);
+        EditText etTopicDesc = topicDialog.findViewById(R.id.tv_topic_desc);
         MaterialButton btnCancelTopic = topicDialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = topicDialog.findViewById(R.id.btnSaveTopic);
 
@@ -241,7 +240,6 @@ public class Main_ChonTuVung extends AppCompatActivity {
             Topic newTopic = new Topic();
             newTopic.setName(name);
             newTopic.setDescription(desc);
-            newTopic.setIconName("ic_flight");
 
             long newId = dbHelper.addTopic(newTopic);
             Toast.makeText(Main_ChonTuVung.this, "Thêm chủ đề mới thành công!", Toast.LENGTH_SHORT).show();

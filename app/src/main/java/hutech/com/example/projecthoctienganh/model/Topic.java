@@ -4,18 +4,16 @@ public class Topic {
     private int id;
     private String name;
     private String description;
-    private String iconName;
     private int totalWords;
     private int learnedWords;
 
     public Topic() {
     }
 
-    public Topic(int id, String name, String description, String iconName) {
+    public Topic(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.iconName = iconName;
     }
 
     public int getId() {
@@ -40,14 +38,6 @@ public class Topic {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getIconName() {
-        return iconName;
-    }
-
-    public void setIconName(String iconName) {
-        this.iconName = iconName;
     }
 
     public int getTotalWords() {

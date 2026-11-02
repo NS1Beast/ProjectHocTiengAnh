@@ -7,20 +7,18 @@ public class Vocabulary {
     private String phonetic;
     private String meaning;
     private String example;
-    private String iconName;
     private boolean isLearned;
 
     public Vocabulary() {
     }
 
-    public Vocabulary(int id, int topicId, String word, String phonetic, String meaning, String example, String iconName, boolean isLearned) {
+    public Vocabulary(int id, int topicId, String word, String phonetic, String meaning, String example, boolean isLearned) {
         this.id = id;
         this.topicId = topicId;
         this.word = word;
         this.phonetic = phonetic;
         this.meaning = meaning;
         this.example = example;
-        this.iconName = iconName;
         this.isLearned = isLearned;
     }
 
@@ -70,14 +68,6 @@ public class Vocabulary {
 
     public void setExample(String example) {
         this.example = example;
-    }
-
-    public String getIconName() {
-        return iconName;
-    }
-
-    public void setIconName(String iconName) {
-        this.iconName = iconName;
     }
 
     public boolean isLearned() {

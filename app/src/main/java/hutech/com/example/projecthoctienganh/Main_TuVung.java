@@ -173,10 +173,7 @@ public class Main_TuVung extends AppCompatActivity {
             tvHeaderTitle.setText(currentTopic.getName());
             tvBannerTopicName.setText(currentTopic.getName());
 
-            int iconResId = getResources().getIdentifier(currentTopic.getIconName(), "drawable", getPackageName());
-            if (iconResId != 0) {
-                imgBannerTopicIcon.setImageResource(iconResId);
-            } else {
+            if (imgBannerTopicIcon != null) {
                 imgBannerTopicIcon.setImageResource(R.drawable.ic_flight);
             }
 
@@ -249,9 +246,8 @@ public class Main_TuVung extends AppCompatActivity {
         tvDetailMeaning.setText(vocab.getMeaning());
         tvDetailExample.setText(vocab.getExample() != null && !vocab.getExample().isEmpty() ? vocab.getExample() : "Chưa có ví dụ câu.");
 
-        int iconResId = getResources().getIdentifier(vocab.getIconName(), "drawable", getPackageName());
-        if (iconResId != 0) {
-            imgDetailIcon.setImageResource(iconResId);
+        if (imgDetailIcon != null) {
+            imgDetailIcon.setImageResource(R.drawable.ic_word_default);
         }
 
         switchLearned.setChecked(vocab.isLearned());
@@ -297,10 +293,10 @@ public class Main_TuVung extends AppCompatActivity {
         TextView tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
         AutoCompleteTextView actvSelectTopic = dialog.findViewById(R.id.actvSelectTopic);
         MaterialButton btnQuickAddTopic = dialog.findViewById(R.id.btnQuickAddTopic);
-        EditText etWord = dialog.findViewById(R.id.etWord);
-        EditText etPhonetic = dialog.findViewById(R.id.etPhonetic);
-        EditText etMeaning = dialog.findViewById(R.id.etMeaning);
-        EditText etExample = dialog.findViewById(R.id.etExample);
+        EditText etWord = dialog.findViewById(R.id.tv_word);
+        EditText etPhonetic = dialog.findViewById(R.id.tv_phonetic);
+        EditText etMeaning = dialog.findViewById(R.id.tv_meaning);
+        EditText etExample = dialog.findViewById(R.id.tv_example);
         MaterialButton btnCancelWord = dialog.findViewById(R.id.btnCancelWord);
         MaterialButton btnSaveWord = dialog.findViewById(R.id.btnSaveWord);
 
@@ -371,7 +367,6 @@ public class Main_TuVung extends AppCompatActivity {
                 newVocab.setPhonetic(phonetic);
                 newVocab.setMeaning(meaning);
                 newVocab.setExample(example);
-                newVocab.setIconName("ic_word_default");
                 newVocab.setLearned(false);
 
                 dbHelper.addVocabulary(newVocab);
@@ -398,8 +393,8 @@ public class Main_TuVung extends AppCompatActivity {
             tvTopicDialogTitle.setText("Thêm chủ đề mới");
         }
 
-        EditText etTopicName = topicDialog.findViewById(R.id.etTopicName);
-        EditText etTopicDesc = topicDialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = topicDialog.findViewById(R.id.tv_topic_name);
+        EditText etTopicDesc = topicDialog.findViewById(R.id.tv_topic_desc);
         MaterialButton btnCancelTopic = topicDialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = topicDialog.findViewById(R.id.btnSaveTopic);
 
@@ -417,7 +412,6 @@ public class Main_TuVung extends AppCompatActivity {
             Topic newTopic = new Topic();
             newTopic.setName(name);
             newTopic.setDescription(desc);
-            newTopic.setIconName("ic_flight");
 
             long newId = dbHelper.addTopic(newTopic);
             Toast.makeText(Main_TuVung.this, "Thêm chủ đề mới thành công!", Toast.LENGTH_SHORT).show();
@@ -457,8 +451,8 @@ public class Main_TuVung extends AppCompatActivity {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        EditText etTopicName = dialog.findViewById(R.id.etTopicName);
-        EditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = dialog.findViewById(R.id.tv_topic_name);
+        EditText etTopicDesc = dialog.findViewById(R.id.tv_topic_desc);
         MaterialButton btnCancelTopic = dialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = dialog.findViewById(R.id.btnSaveTopic);
 

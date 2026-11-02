@@ -66,7 +66,7 @@ public class Main_ChuDe extends AppCompatActivity {
 
     private void initViews() {
         btnBackTopic = findViewById(R.id.btnBackTopic);
-        etSearchTopic = findViewById(R.id.etSearchTopic);
+        etSearchTopic = findViewById(R.id.tv_search_topic);
         lvTopics = findViewById(R.id.lvTopics);
         fabAddTopic = findViewById(R.id.fabAddTopic);
 
@@ -133,8 +133,8 @@ public class Main_ChuDe extends AppCompatActivity {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        EditText etTopicName = dialog.findViewById(R.id.etTopicName);
-        EditText etTopicDesc = dialog.findViewById(R.id.etTopicDesc);
+        EditText etTopicName = dialog.findViewById(R.id.tv_topic_name);
+        EditText etTopicDesc = dialog.findViewById(R.id.tv_topic_desc);
         MaterialButton btnCancelTopic = dialog.findViewById(R.id.btnCancelTopic);
         MaterialButton btnSaveTopic = dialog.findViewById(R.id.btnSaveTopic);
 
@@ -152,7 +152,6 @@ public class Main_ChuDe extends AppCompatActivity {
             Topic newTopic = new Topic();
             newTopic.setName(name);
             newTopic.setDescription(desc);
-            newTopic.setIconName("ic_flight");
 
             dbHelper.addTopic(newTopic);
             Toast.makeText(Main_ChuDe.this, "Thêm chủ đề mới thành công!", Toast.LENGTH_SHORT).show();

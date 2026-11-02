@@ -10,7 +10,7 @@
         android:id="@+id/tvTopicDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chỉnh sửa chủ đề"
+        android:text="Thêm / Sửa chủ đề"
         android:textColor="@color/text_primary"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -24,7 +24,7 @@
         android:textSize="14sp" />
 
     <EditText
-        android:id="@+id/etTopicName"
+        android:id="@+id/tv_topic_name"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"
@@ -43,7 +43,7 @@
         android:textSize="14sp" />
 
     <EditText
-        android:id="@+id/etTopicDesc"
+        android:id="@+id/tv_topic_desc"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"

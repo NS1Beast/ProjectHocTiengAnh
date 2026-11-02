@@ -15,7 +15,7 @@ import hutech.com.example.projecthoctienganh.model.Vocabulary;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "EnglishLearning.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Filter Constants
     public static final int FILTER_ALL = 0;
@@ -27,7 +27,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TOPIC_ID = "id";
     private static final String KEY_TOPIC_NAME = "name";
     private static final String KEY_TOPIC_DESC = "description";
-    private static final String KEY_TOPIC_ICON = "icon_name";
 
     // Table Vocabularies
     private static final String TABLE_VOCABULARIES = "vocabularies";
@@ -37,7 +36,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_VOCAB_PHONETIC = "phonetic";
     private static final String KEY_VOCAB_MEANING = "meaning";
     private static final String KEY_VOCAB_EXAMPLE = "example";
-    private static final String KEY_VOCAB_ICON = "icon_name";
     private static final String KEY_VOCAB_IS_LEARNED = "is_learned";
 
     public DatabaseHelper(Context context) {
@@ -49,8 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String CREATE_TOPICS_TABLE = "CREATE TABLE " + TABLE_TOPICS + "("
                 + KEY_TOPIC_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_TOPIC_NAME + " TEXT,"
-                + KEY_TOPIC_DESC + " TEXT,"
-                + KEY_TOPIC_ICON + " TEXT" + ")";
+                + KEY_TOPIC_DESC + " TEXT" + ")";
 
         String CREATE_VOCABULARIES_TABLE = "CREATE TABLE " + TABLE_VOCABULARIES + "("
                 + KEY_VOCAB_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -59,7 +56,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + KEY_VOCAB_PHONETIC + " TEXT,"
                 + KEY_VOCAB_MEANING + " TEXT,"
                 + KEY_VOCAB_EXAMPLE + " TEXT,"
-                + KEY_VOCAB_ICON + " TEXT,"
                 + KEY_VOCAB_IS_LEARNED + " INTEGER DEFAULT 0,"
                 + "FOREIGN KEY(" + KEY_VOCAB_TOPIC_ID + ") REFERENCES " + TABLE_TOPICS + "(" + KEY_TOPIC_ID + ") ON DELETE CASCADE" + ")";
 
@@ -86,7 +82,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 topic.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TOPIC_ID)));
                 topic.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_NAME)));
                 topic.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_DESC)));
-                topic.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_ICON)));
 
                 int[] stats = getTopicStats(topic.getId());
                 topic.setTotalWords(stats[0]);
@@ -110,7 +105,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             topic.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TOPIC_ID)));
             topic.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_NAME)));
             topic.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_DESC)));
-            topic.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TOPIC_ICON)));
 
             int[] stats = getTopicStats(topic.getId());
             topic.setTotalWords(stats[0]);
@@ -125,7 +119,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_TOPIC_NAME, topic.getName());
         values.put(KEY_TOPIC_DESC, topic.getDescription());
-        values.put(KEY_TOPIC_ICON, topic.getIconName());
         return db.insert(TABLE_TOPICS, null, values);
     }
 
@@ -134,7 +127,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_TOPIC_NAME, topic.getName());
         values.put(KEY_TOPIC_DESC, topic.getDescription());
-        values.put(KEY_TOPIC_ICON, topic.getIconName());
 
         return db.update(TABLE_TOPICS, values, KEY_TOPIC_ID + "=?",
                 new String[]{String.valueOf(topic.getId())});
@@ -191,7 +183,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     vocab.setPhonetic(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_PHONETIC)));
                     vocab.setMeaning(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_MEANING)));
                     vocab.setExample(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_EXAMPLE)));
-                    vocab.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_ICON)));
                     vocab.setLearned(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_IS_LEARNED)) == 1);
 
                     list.add(vocab);
@@ -233,7 +224,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     vocab.setPhonetic(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_PHONETIC)));
                     vocab.setMeaning(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_MEANING)));
                     vocab.setExample(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_EXAMPLE)));
-                    vocab.setIconName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOCAB_ICON)));
                     vocab.setLearned(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOCAB_IS_LEARNED)) == 1);
 
                     list.add(vocab);
@@ -252,7 +242,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_VOCAB_PHONETIC, vocab.getPhonetic());
         values.put(KEY_VOCAB_MEANING, vocab.getMeaning());
         values.put(KEY_VOCAB_EXAMPLE, vocab.getExample());
-        values.put(KEY_VOCAB_ICON, vocab.getIconName() != null ? vocab.getIconName() : "ic_word_default");
         values.put(KEY_VOCAB_IS_LEARNED, vocab.isLearned() ? 1 : 0);
 
         return db.insert(TABLE_VOCABULARIES, null, values);
@@ -265,7 +254,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_VOCAB_PHONETIC, vocab.getPhonetic());
         values.put(KEY_VOCAB_MEANING, vocab.getMeaning());
         values.put(KEY_VOCAB_EXAMPLE, vocab.getExample());
-        values.put(KEY_VOCAB_ICON, vocab.getIconName());
         values.put(KEY_VOCAB_IS_LEARNED, vocab.isLearned() ? 1 : 0);
 
         return db.update(TABLE_VOCABULARIES, values, KEY_VOCAB_ID + "=?",
